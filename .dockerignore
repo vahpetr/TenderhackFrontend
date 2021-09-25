@@ -1,0 +1,13 @@
+.idea
+.vscode
+.git
+.vs
+.dockerignore
+.gitignore
+Dockerfile
+node_modules
+build
+README.md
+.DS_Store
+.AppleDouble
+.LSOverride
