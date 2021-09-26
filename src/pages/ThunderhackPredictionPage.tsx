@@ -71,7 +71,7 @@ function ThunderhackProviderPage() {
       const responce = await fetch(`https://localhost:7029/api/v1/organizations?inns=${inn}&kpps=${kpp}`)
       if(responce.ok) {
         const result = await responce.json();
-        if (result.length == 1) {
+        if (result.length === 1) {
           setOrganization(result[0]);
         } else {
           setOrganization({ name: "Не удалось найти" } as Organization );
@@ -84,27 +84,23 @@ function ThunderhackProviderPage() {
       if(predictedResponce.ok) {
         const scoredOrders = await predictedResponce.json() as ScoredOrder[];
         const predictedProductIds = scoredOrders.filter(p => p.order.productId !== null).map(p => p.order.productId);
-        if (predictedProductIds.length != 0) {
+        if (predictedProductIds.length !== 0) {
           const ids = predictedProductIds.sort().reduce((text, id) => `${text}&ids=${id}`, '')
-        const productsResponce = await fetch(`https://localhost:7029/api/v1/products?${ids}`)
-        if (productsResponce.ok) {
-          const productsResult = await productsResponce.json() as Product[];
-          const productsMap = productsResult.reduce((map, curr) => {
-            //@ts-ignore
-            map[curr.id] = curr;
-            return map;
-          }, {});
+          const productsResponce = await fetch(`https://localhost:7029/api/v1/products?${ids}`)
+          if (productsResponce.ok) {
+            const productsResult = await productsResponce.json() as Product[];
+            const productsMap = productsResult.reduce((map, curr) => {
+              //@ts-ignore
+              map[curr.id] = curr;
+              return map;
+            }, {});
 
-        return {
-          scoredOrders,
-          productsMap
-        };
-        // const rows = predictedResult.sort((a,b) => b.score - a.score).map(p => p.order).map(o => rowSelector(o, productsMap))
-        //@ts-ignore
-        // setPredictions(rows);
+          return {
+            scoredOrders,
+            productsMap
+          };
+          }
         }
-        }
-
       }
       return {
         scoredOrders: [],
@@ -118,16 +114,16 @@ function ThunderhackProviderPage() {
       getPredictions(-3),
       getPredictions(-2),
       getPredictions(-1)
-    ]).then(p => {
+    ]).then(predict => {
       const scoredOrders = [
-        ...p[0].scoredOrders,
-        ...p[1].scoredOrders,
-        ...p[2].scoredOrders
+        ...predict[0].scoredOrders,
+        ...predict[1].scoredOrders,
+        ...predict[2].scoredOrders
       ].sort((a,b) => b.score - a.score)
       const productsMap = {
-        ...p[0].productsMap,
-        ...p[1].productsMap,
-        ...p[2].productsMap,
+        ...predict[0].productsMap,
+        ...predict[1].productsMap,
+        ...predict[2].productsMap,
       }
       const orders = scoredOrders.map(p => p.order);
       const rows = orders.map(p => rowSelector(p, productsMap));
@@ -135,7 +131,7 @@ function ThunderhackProviderPage() {
       setPredictions(rows);
     });
 
-  }, [inn, kpp]);
+  }, [type, inn, kpp]);
 
   const text = type === "provider" ? "Скоро начнутся закупки" : "Вам скоро понадоится"
 
@@ -143,7 +139,7 @@ function ThunderhackProviderPage() {
     return <div>
       <h4 style={{
         textAlign: 'right'
-      }}>{organization?.name}. ИНН: {inn}. КПП: {kpp}.</h4>
+      }}>{organization?.name}. ИНН: {inn}. КПП: {kpp}</h4>
       <h3>{text}</h3>
       <div style={{ height: 500, width: '100%' }}>
         <DataGrid rows={predictions} columns={columns} />
