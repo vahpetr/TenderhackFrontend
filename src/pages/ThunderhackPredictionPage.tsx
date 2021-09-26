@@ -60,7 +60,6 @@ const rowSelector = (p: Order, productsMap: {[key: number]: Product}) => {
   };
 }
 
-
 function ThunderhackProviderPage() {
   const { type, inn, kpp } = useParams<ThunderhackCustomerPageRouteParams>();
   const [organization, setOrganization] = useState<Organization | null>(null);
@@ -120,13 +119,29 @@ function ThunderhackProviderPage() {
         ...predict[0].scoredOrders,
         ...predict[1].scoredOrders,
         ...predict[2].scoredOrders
-      ].sort((a,b) => b.score - a.score)
+      ]
+      const grouped: {[key: number]: ScoredOrder} = {};
+
+      for (const scoredOrder of scoredOrders) {
+        if (!grouped[scoredOrder.order.id]) {
+          grouped[scoredOrder.order.id] = scoredOrder;
+        } else {
+          grouped[scoredOrder.order.id].score += scoredOrder.score;
+        }
+      }
+
+      var values = []
+      for (const id in grouped) {
+        values.push(grouped[id])
+      }
+
+      var sorted = values.sort((a,b) => b.score - a.score)
       const productsMap = {
         ...predict[0].productsMap,
         ...predict[1].productsMap,
         ...predict[2].productsMap,
       }
-      const orders = scoredOrders.map(p => p.order);
+      const orders = sorted.map(p => p.order);
       const rows = orders.map(p => rowSelector(p, productsMap));
       // @ts-ignore
       setPredictions(rows);
