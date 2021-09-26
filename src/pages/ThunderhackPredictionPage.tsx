@@ -33,20 +33,20 @@ interface ScoredOrder {
 interface Category {
   id: number;
   title: string;
+  kpgz: string;
 }
 
 interface Product {
   id: number;
   name: string;
-  cpgzCode: string;
   category: Category;
 }
 
 const columns: GridColDef[] = [
   { field: 'productId', headerName: '№', width: 100 },
   { field: 'name', headerName: 'Наименование', width: 250 },
-  { field: 'cpgzName', headerName: 'Категория', width: 200 },
-  { field: 'cpgzCode', headerName: 'КПГЗ', width: 200 },
+  { field: 'categoryTitle', headerName: 'Категория', width: 200 },
+  { field: 'categoryKpgz', headerName: 'КПГЗ', width: 200 },
   { field: 'quantity', headerName: 'Количество', width: 200 },
   { field: 'amount', headerName: 'Цена', width: 150 },
 ];
@@ -55,8 +55,8 @@ const rowSelector = (p: Order, productsMap: {[key: number]: Product}) => {
   return {
     ...p,
     name: p.productId ? productsMap[p.productId].name : 'n/a',
-    cpgzName: p.productId ? productsMap[p.productId].category.title : 'n/a',
-    cpgzCode: p.productId ? productsMap[p.productId].cpgzCode : 'n/a'
+    categoryTitle: p.productId ? productsMap[p.productId].category.title : 'n/a',
+    categoryKpgz: p.productId ? productsMap[p.productId].category.kpgz : 'n/a'
   };
 }
 
@@ -115,6 +115,7 @@ function ThunderhackProviderPage() {
       getPredictions(-2),
       getPredictions(-1)
     ]).then(predict => {
+      // TODO add group by id and mul to score
       const scoredOrders = [
         ...predict[0].scoredOrders,
         ...predict[1].scoredOrders,
