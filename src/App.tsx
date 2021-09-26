@@ -6,7 +6,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import {
-  createMuiTheme,
+  createTheme,
   responsiveFontSizes,
   ThemeProvider,
   createStyles,
@@ -26,10 +26,11 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import SendIcon from "@material-ui/icons/Send";
 import clsx from "clsx";
 import ListItemLink from "./components/ListItemLink";
-// import ChatPage from "./pages/ChatPage";
-import ThunderhackPage from "./pages/ThunderhackPage";
+import ThunderhackEnterPage from "./pages/ThunderhackEnterPage";
+import ThunderhackPredictionPage from "./pages/ThunderhackPredictionPage";
+
 // https://material-ui.com/customization/typography/#responsive-font-sizes
-const theme = responsiveFontSizes(createMuiTheme({}));
+const theme = responsiveFontSizes(createTheme({}));
 
 const drawerWidth = 240;
 
@@ -38,21 +39,6 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: "flex",
     },
-    // appBar: {
-    //   zIndex: theme.zIndex.drawer + 1,
-    //   transition: theme.transitions.create(['width', 'margin'], {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.leavingScreen,
-    //   }),
-    // },
-    // appBarShift: {
-    //   marginLeft: drawerWidth,
-    //   width: `calc(100% - ${drawerWidth}px)`,
-    //   transition: theme.transitions.create(['width', 'margin'], {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.enteringScreen,
-    //   }),
-    // },
     menuButton: {
       marginRight: 36,
     },
@@ -87,7 +73,6 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       justifyContent: "flex-end",
       padding: theme.spacing(0, 1),
-      // necessary for content to be below app bar
       ...theme.mixins.toolbar,
     },
     content: {
@@ -115,12 +100,7 @@ export function App() {
     <div className={classes.root}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AppBar
-        // position="fixed"
-        // className={clsx(classes.appBar, {
-        //   [classes.appBarShift]: open,
-        // })}
-        >
+        <AppBar>
           <Toolbar>
             <IconButton
               color="inherit"
@@ -140,8 +120,6 @@ export function App() {
         </AppBar>
         <Router>
           <SwipeableDrawer
-            // TODO remove variant prop for mobile
-            // variant="permanent"
             className={clsx(classes.drawer, {
               [classes.drawerOpen]: open,
               [classes.drawerClose]: !open,
@@ -163,11 +141,6 @@ export function App() {
             </div>
             <Divider />
             <List>
-              {/* <ListItemLink
-                to="/chat"
-                primary="Chat"
-                icon={SendIconComponent}
-              /> */}
               <ListItemLink
                 to="/thunderhack"
                 primary="Thunderhack"
@@ -178,13 +151,13 @@ export function App() {
           <main className={classes.content}>
             <div className={classes.toolbar} />
             <Switch>
-              {/* <Route path="/chat">
-                <ChatPage />
-              </Route> */}
-              <Route path="/thunderhack">
-                <ThunderhackPage/>
+              <Route path="/thunderhack/enter">
+                <ThunderhackEnterPage/>
               </Route>
-              <Redirect to="/thunderhack" />
+              <Route path="/thunderhack/:type/:inn/:kpp">
+                <ThunderhackPredictionPage/>
+              </Route>
+              <Redirect to="/thunderhack/enter" />
             </Switch>
           </main>
         </Router>
