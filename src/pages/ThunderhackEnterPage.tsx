@@ -43,7 +43,7 @@ function TabPanel(props: TabPanelProps) {
 
 function ThunderhackEnterPage() {
   const history = useHistory();
-  const [tabIndex, setTabIndex] = useState<number>(0); // provider - 0, customer - 1
+  const [tabIndex, setTabIndex] = useState<number>(0); // producer - 0, customer - 1
   const innRef = useRef(null);
   const kppRef = useRef(null);
 
@@ -56,7 +56,7 @@ function ThunderhackEnterPage() {
       return;
     }
 
-    var type = tabIndex === 0 ? "provider" : "customer"
+    var type = tabIndex === 0 ? "producer" : "customer"
     // @ts-ignore
     history.push(`/thunderhack/${type}/${innRef.current.value}/${kppRef.current.value}`)
   };
@@ -78,12 +78,12 @@ function ThunderhackEnterPage() {
         }} style={{
           justifyContent: 'center'
         }}>
-          <TextField id="inn-provider" label="ИНН" variant="outlined" style={{
+          <TextField id="inn-producer" label="ИНН" variant="outlined" style={{
             paddingRight: '16px',
           }} inputProps={{
             ref: innRef
           }} />
-          <TextField id="kpp-provider" label="КПП" variant="outlined" inputProps={{
+          <TextField id="kpp-producer" label="КПП" variant="outlined" inputProps={{
               ref: kppRef
             }} style={{
             paddingRight: '16px',

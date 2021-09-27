@@ -44,11 +44,12 @@ interface Product {
 
 const columns: GridColDef[] = [
   { field: 'productId', headerName: '№', width: 100 },
-  { field: 'name', headerName: 'Наименование', width: 250 },
-  { field: 'categoryTitle', headerName: 'Категория', width: 200 },
+  { field: 'name', headerName: 'Наименование', width: 400 },
+  { field: 'categoryTitle', headerName: 'Категория', width: 350 },
   { field: 'categoryKpgz', headerName: 'КПГЗ', width: 200 },
-  { field: 'quantity', headerName: 'Количество', width: 200 },
+  { field: 'quantity', headerName: 'Количество', width: 150 },
   { field: 'amount', headerName: 'Цена', width: 150 },
+  { field: 'medianPrice', headerName: 'Средняя цена', width: 150 },
 ];
 
 const rowSelector = (p: Order, productsMap: {[key: number]: Product}) => {
@@ -56,11 +57,12 @@ const rowSelector = (p: Order, productsMap: {[key: number]: Product}) => {
     ...p,
     name: p.productId ? productsMap[p.productId].name : 'n/a',
     categoryTitle: p.productId ? productsMap[p.productId].category.title : 'n/a',
-    categoryKpgz: p.productId ? productsMap[p.productId].category.kpgz : 'n/a'
+    categoryKpgz: p.productId ? productsMap[p.productId].category.kpgz : 'n/a',
+    medianPrice: (p.amount / p.quantity).toFixed(2)
   };
 }
 
-function ThunderhackProviderPage() {
+function ThunderhackPredicionPage() {
   const { type, inn, kpp } = useParams<ThunderhackCustomerPageRouteParams>();
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [predictions, setPredictions] = useState<GridRowsProp[]>([]);
@@ -77,8 +79,8 @@ function ThunderhackProviderPage() {
         }
       }
     };
-    const getPredictions = async (yearOffset: number) => {
-      const predictor = type === "provider" ? "demands" : "purchases"
+    const getPredictions = async (yearOffset: number = -1) => {
+      const predictor = type === "producer" ? "demands" : "purchases"
       const predictedResponce = await fetch(`https://localhost:7029/api/v1/orders/predict/${predictor}?inn=${inn}&kpp=${kpp}&yearOffset=${yearOffset}`)
       if(predictedResponce.ok) {
         const scoredOrders = await predictedResponce.json() as ScoredOrder[];
@@ -127,6 +129,8 @@ function ThunderhackProviderPage() {
           grouped[scoredOrder.order.id] = scoredOrder;
         } else {
           grouped[scoredOrder.order.id].score += scoredOrder.score;
+          grouped[scoredOrder.order.id].order.amount += scoredOrder.order.amount;
+          grouped[scoredOrder.order.id].order.quantity += scoredOrder.order.quantity;
         }
       }
 
@@ -136,12 +140,12 @@ function ThunderhackProviderPage() {
       }
 
       var sorted = values.sort((a,b) => b.score - a.score)
+      const orders = sorted.splice(0, 100).map(p => p.order);
       const productsMap = {
         ...predict[0].productsMap,
         ...predict[1].productsMap,
         ...predict[2].productsMap,
       }
-      const orders = sorted.map(p => p.order);
       const rows = orders.map(p => rowSelector(p, productsMap));
       // @ts-ignore
       setPredictions(rows);
@@ -149,7 +153,7 @@ function ThunderhackProviderPage() {
 
   }, [type, inn, kpp]);
 
-  const text = type === "provider" ? "Скоро начнутся закупки" : "Вам скоро понадоится"
+  const text = type === "producer" ? "Скоро начнутся закупки" : "Вам скоро понадоится"
 
   if (organization) {
     return <div>
@@ -166,4 +170,4 @@ function ThunderhackProviderPage() {
   }
 }
 
-export default ThunderhackProviderPage;
+export default ThunderhackPredicionPage;
