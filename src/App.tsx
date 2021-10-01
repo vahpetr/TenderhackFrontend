@@ -26,7 +26,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import SendIcon from "@material-ui/icons/Send";
 import clsx from "clsx";
 import ListItemLink from "./components/ListItemLink";
-import ThunderhackEnterPage from "./pages/ThunderhackEnterPage";
+import ThunderhackPage from "./pages/ThunderhackPage";
 import ThunderhackPredictionPage from "./pages/ThunderhackPredictionPage";
 
 // https://material-ui.com/customization/typography/#responsive-font-sizes
@@ -151,13 +151,13 @@ export function App() {
           <main className={classes.content}>
             <div className={classes.toolbar} />
             <Switch>
-              <Route path="/thunderhack/enter">
-                <ThunderhackEnterPage/>
+              <Route exact path="/thunderhack">
+                <ThunderhackPage/>
               </Route>
-              <Route path="/thunderhack/:type/:inn/:kpp">
+              <Route exact path="/thunderhack/:type/:inn/:kpp">
                 <ThunderhackPredictionPage/>
               </Route>
-              <Redirect to="/thunderhack/enter" />
+              <Redirect to="/thunderhack" />
             </Switch>
           </main>
         </Router>

@@ -41,7 +41,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function ThunderhackEnterPage() {
+function ThunderhackPage() {
   const history = useHistory();
   const [tabIndex, setTabIndex] = useState<number>(0); // producer - 0, customer - 1
   const innRef = useRef(null);
@@ -141,4 +141,4 @@ function ThunderhackEnterPage() {
   );
 }
 
-export default ThunderhackEnterPage;
+export default ThunderhackPage;

@@ -44,21 +44,24 @@ interface Product {
 
 const columns: GridColDef[] = [
   { field: 'productId', headerName: '№', width: 100 },
-  { field: 'name', headerName: 'Наименование', width: 400 },
-  { field: 'categoryTitle', headerName: 'Категория', width: 350 },
+  { field: 'name', headerName: 'Наименование', width: 300 },
+  { field: 'categoryTitle', headerName: 'Категория', width: 300 },
   { field: 'categoryKpgz', headerName: 'КПГЗ', width: 200 },
   { field: 'quantity', headerName: 'Количество', width: 150 },
   { field: 'amount', headerName: 'Цена', width: 150 },
   { field: 'medianPrice', headerName: 'Средняя цена', width: 150 },
+  { field: 'score', headerName: 'Оценка', width: 150 },
 ];
 
-const rowSelector = (p: Order, productsMap: {[key: number]: Product}) => {
+const rowSelector = (p: ScoredOrder, productsMap: {[key: number]: Product}) => {
+  var order = p.order;
   return {
-    ...p,
-    name: p.productId ? productsMap[p.productId].name : 'n/a',
-    categoryTitle: p.productId ? productsMap[p.productId].category.title : 'n/a',
-    categoryKpgz: p.productId ? productsMap[p.productId].category.kpgz : 'n/a',
-    medianPrice: (p.amount / p.quantity).toFixed(2)
+    ...order,
+    name: order.productId ? productsMap[order.productId].name : 'n/a',
+    categoryTitle: order.productId ? productsMap[order.productId].category.title : 'n/a',
+    categoryKpgz: order.productId ? productsMap[order.productId].category.kpgz : 'n/a',
+    medianPrice: (order.amount / order.quantity).toFixed(2),
+    score: p.score
   };
 }
 
@@ -123,7 +126,6 @@ function ThunderhackPredicionPage() {
         ...predict[2].scoredOrders
       ]
       const grouped: {[key: number]: ScoredOrder} = {};
-
       for (const scoredOrder of scoredOrders) {
         if (!grouped[scoredOrder.order.id]) {
           grouped[scoredOrder.order.id] = scoredOrder;
@@ -133,14 +135,13 @@ function ThunderhackPredicionPage() {
           grouped[scoredOrder.order.id].order.quantity += scoredOrder.order.quantity;
         }
       }
-
       var values = []
       for (const id in grouped) {
         values.push(grouped[id])
       }
 
       var sorted = values.sort((a,b) => b.score - a.score)
-      const orders = sorted.splice(0, 100).map(p => p.order);
+      const orders = sorted;
       const productsMap = {
         ...predict[0].productsMap,
         ...predict[1].productsMap,
